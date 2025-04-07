@@ -1,5 +1,12 @@
 FROM ghcr.io/astral-sh/uv:python3.12-alpine
 
+# Install dependencies (alpine)
+RUN apk add --no-cache \
+    bash \
+    sqlite \
+    rsync \
+    && rm -rf /var/cache/apk/*
+
 COPY pyproject.toml .
 COPY server.py .
 
