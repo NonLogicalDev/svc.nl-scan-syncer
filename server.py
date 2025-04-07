@@ -136,6 +136,15 @@ class SyncWorker:
         files = list(self.src_dir.glob('**/*'))
         with self.connect_db() as conn:
             for file in files:
+                if file.is_dir():
+                    # Don't touch directories to avoid complications
+                    logger.info(f"{file} :: Skipping because it is a directory")
+                    continue
+                if file.is_symlink():
+                    # Don't touch symlinks to avoid complications
+                    logger.info(f"{file} :: Skipping because it is a symlink")
+                    continue
+
                 self.db_init_file(conn, file)
 
                 # If Dst1 is not synced, sync it
@@ -178,6 +187,9 @@ class SyncWorker:
     async def sync_file(self, file, dst_selector):
         dst_dir = self.dst1_dir if dst_selector == 'dst1' else self.dst2_dir
         target_path = dst_dir / file.relative_to(self.src_dir)
+
+        # Create the target directory if it doesn't exist (rsync will fail otherwise)
+        target_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Shell out to rsync
         cmd = ['rsync', '-av', file, target_path]
