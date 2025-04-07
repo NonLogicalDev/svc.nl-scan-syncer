@@ -1,0 +1,11 @@
+[project]
+name = "py-doc-syncer"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiocron>=2.1",
+    "quart>=0.20.0",
+    "uvicorn>=0.34.0",
+]
